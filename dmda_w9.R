@@ -1,3 +1,4 @@
+
 ---9a-------
 
 x<-c(1,2,3,4,5)
@@ -19,7 +20,7 @@ plot(result)
 #residualPlots(result)
 dev.off()
 
--------c----------
+-------logistic--------
 
 claimants<-read.csv("C:/Users/student/Desktop/5cr/claimants.csv")
 sum(is.na(claimants))
@@ -41,3 +42,21 @@ rocrperf<-performance(rocrpred,'tpr','fpr')
 plot(rocrperf,colorize=T,text.adj=c(-0.2,1.7))
 auc<-auc(claimants$ATTORNEY~prob)
 auc
+
+----------poisson------
+
+input<- warpbreaks
+print(head(input))
+plot(input)
+output<-glm(formula = breaks~wool+tension,data =input,family = poisson)
+print(summary(output))
+plot(output)
+
+
+
+input<- warpbreaks
+print(head(input))
+plot(input)
+output<-glm(formula = breaks~wool+tension,data =warpbreaks,family = poisson)
+print(summary(output))
+plot(output)
