@@ -1,0 +1,250 @@
+8) a)
+------mean: --------------
+
+x <-c(12,7,3,4.2,18,2,54,-21,8,-5)
+result=mean(x)
+print(result)
+
+-------trim:------------------
+
+x <-c(12,7,3,4.2,18,2,54,-21,8,-5)
+result=mean(x,trim=0.3)
+print(result)
+
+--------NA option--------------
+
+x <-c(12,7,3,4.2,18,2,54,-21,8,-5)
+result=mean(x,na.rm=TRUE)
+print(result)
+
+------median----------------
+
+x <-c(12,7,3,4.2,18,2,54,-21,8,-5)
+result=median(x)
+print(result)
+
+--------------mode-------------------
+
+getmode <- function(v){
+  uniquev <- unique(v)
+  uniquev[which.max(tabulate(match(v,uniquev)))]
+}
+v<-c(1,33,5,6,44,7,73,55,33,54)
+result=getmode(v)
+print(result)
+v<-c("it","CSE","CSE","aiml","it","CSE")
+result=getmode(v)
+print(result)
+
+-----------------------b)- analysis and convariance-------------------------
+
+input <- mtcars[,c("am","mpg","hp")]
+print(head(input))
+result1 <- aov(mpg~hp*am,dat=input)
+result2 <- aov(mpg~hp+am,data=input)
+print(anova(result1,result2))
+boxplot(anova(result1,result2))
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+9)
+----------linear regression----------
+x<-c(1,2,3,4,5)
+y<-c(1.2,1.8,2.6,3.2,3.8)
+result<-lm(y~x)
+print(summary(result))
+png(file="LinearRegressiongraph.png")
+plot(x,y,col="red",main="weekly sales report",abline(lm(y~x)),cex=1.3,pch=16,xlab="weeks",ylab="sales")
+dev.off()
+
+------------- multiple regression------------
+
+input<-mtcars[,c("mpg","wt","disp","hp")]
+result<-lm(mpg~wt+disp*hp,data=input)
+print(summary(result))
+png(file="Multilinearregression.png")
+plot(result)
+
+#residualPlots(result)
+dev.off()
+
+-------------logistic regression------------
+
+claimants<-read.csv("C:/Users/student/Desktop/5cr/claimants.csv")
+sum(is.na(claimants))
+claimants<-na.omit(claimants)
+logit<-glm(ATTORNEY~factor(CLMSEX)+factor(CLMINSUR)+factor(SEATBELT)+CLMAGE+LOSS,family="binomial",data=claimants)
+summary(logit)
+prob=predict(logit,type=c("response"),claimants)
+prob
+confusion<-table(prob>0.5,claimants$ATTORNEY)
+confusion
+Accuracy<-sum(diag(confusion))/sum(confusion)
+Accuracy
+install.packages("ROCR")
+install.packages("pROC")
+library(ROCR)
+library(pROC)
+rocrpred<-prediction(prob,claimants$ATTORNEY)
+rocrperf<-performance(rocrpred,'tpr','fpr')
+plot(rocrperf,colorize=T,text.adj=c(-0.2,1.7))
+auc<-auc(claimants$ATTORNEY~prob)
+auc
+
+------------poisson regression--------------
+
+input<- warpbreaks
+print(head(input))
+plot(input)
+output<-glm(formula = breaks~wool+tension,data =input,family = poisson)
+print(summary(output))
+plot(output)
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+10)
+-----------time series----------------
+
+snowfall<-c(630.4,911.5,683.5,790,1170.8,860.1,1330.6,996.6,783.2,982,881.8,1021)
+snowfall_timeseries<-ts(snowfall,start=c(2023,1),frequency=8)
+print(snowfall_timeseries)
+png(file="snowfall.png")
+plot(snowfall_timeseries)
+dev.off()
+
+-------------non linear least square--------
+
+xvalues<-c(-1.6,2.1,2,2.23,3.71,3.25,3.4,3.86,-1.19,2.21)
+yvalues<-c(5.19,7.43,6.94,8.11,18.75,14.88,16.06,19.12,3.21,7.58)
+png(file="nls.png")
+plot(xvalues,yvalues)
+model<-nls(yvalues~b1*xvalues^2+b2,start=list(b1=1,b2=3))
+model
+new.data<-data.frame(xvalues=seq(min(xvalues),max(xvalues),len=100))
+lines(new.data$xvalues,predict(model,newdata=new.data))
+dev.off()
+print(sum(resid(model)^2))
+print(confint(model))
+
+---------------------decision tree--------------
+
+data("iris")
+install.packages("caret")
+install.packages("C50")
+library(caret)
+library(C50)
+set.seed(7)
+inTraininglocal<-createDataPartition(iris$Species,p=.70,list = F)
+training<-iris[inTraininglocal,]
+testing<-iris[-inTraininglocal,]
+model<-C5.0(Species~.,data = training)
+summary(model)
+pred<-predict.C5.0(model,testing[,-5]) #type ="prob"
+a<-table(testing$Species,pred)
+sum(diag(a))/sum(a)
+plot(model)
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+11)
+-------11a--- normal distrubution-----------
+
+x<-seq(-10,10,by=.1)
+y<-dnorm(x,mean=2.5,sd=0.5)
+png(file="dnorm.png")
+plot(x,y)
+dev.off()
+
+x<-seq(-10,10,by=.2)
+y<-pnorm(x,mean=2.5,sd=0.5)
+png(file="pnormm.png")
+plot(x,y)
+dev.off()
+
+x<-seq(0,1,by=0.02)
+y<-qnorm(x,mean=2,sd=1)
+png(file="qnorm.png")
+plot(x,y)
+dev.off()
+
+y<-rnorm(50)
+png(file="rnorm.png")
+hist(y,main="Normal Distribution")
+dev.off()
+
+----------11b- binomial distrubution---------
+
+x<-seq(0,50,by=1)
+y<-dbinom(x,50,0.5)
+png(file="dbinom.png")
+plot(x,y)
+dev.off()
+
+x<-pbinom(26,51,0.35)
+plot(x)
+print(x)
+
+x<-qbinom(0.25,51,1/2)
+print(x)
+plot(x)
+
+x<-rbinom(8,150,.4)
+print(x)
+plot(x)
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+12)
+-----12a--- chi--------
+
+library("MASS")
+print(str(Cars93))
+car_data<- data.frame(Cars93$AirBags, Cars93$Type)
+car_data = table(Cars93$AirBags,Cars93$Type)
+print(car_data)
+smoothScatter(car_data)
+print(chisq.test(car_data))
+
+-------b-----t_test-----
+
+x<-c(12,15,14,10,13,15)
+y<-c(14,18,13,16,17,19)
+t_test_result<-t.test(x,y)
+print(t_test_result)
+boxplot(x,y,names=c("Group X","Group Y"),main="T-Test Comparison",col=c("skyblue","lightgreen"))
+
+---------c-- f_test -------
+
+x<-c(12,15,14,10,13,15)
+y<-c(14,18,13,16,17,19)
+f_test_result<-var.test(x,y)
+print(f_test_result)
+boxplot(x,y,names=c("Group X","Group Y"),main="f-Test: variance Comparison",col=c("lightblue","lightgreen"))
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+1,7) ---student----
+@relation student
+
+@attribute age {<30,30-40,>40}
+@attribute income {low,medium,high}
+@attribute student {yes,no}
+@attribute credit-rating {fair,excellent}
+@attribute buyspc {yes,no}
+
+-------3,4,5----employee-----
+@relation employee
+
+@attribute age {25,27,28,29,30,35,48}
+@attribute salary {10k,15k,17k,20k,25k,30k,32k,35k}
+@attribute performance {good,avg,poor}
+----------------2 contactlenses-------------------
+@relation contact-lenses
+
+@attribute age {young,pre-presbyopic,presbyopic}
+@attribute spectacle-prescrip {myope,hypermetrope}
+@attribute astigmatism {no,yes}
+@attribute tear-prod-rate {reduced,normal}
+@attribute contact-lenses {soft,hard,none}
+-----------------6 iris----------------------------
+@relation iris
+
+@attribute sepallength REAL
+@attribute sepalwidth REAL
+@attribute petallength REAL
+@attribute petalwidth REAL
+@attribute class {Iris-setosa,Iris-versicolor,Iris-virginica}
+
